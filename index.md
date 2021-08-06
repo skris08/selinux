@@ -1,37 +1,61 @@
-## Welcome to GitHub Pages
+## Welcome to Selinux Study
 
-You can use the [editor on GitHub](https://github.com/skris08/selinux/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+You can learn and collaborate with us to extend the learning on the Selinux study
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+### Selinux
 
-### Markdown
+Security-Enhanced Linux (SELinux) is a security architecture for Linux® systems that allows administrators to have more control over who can access the system.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+### What is Sepolicy?
+
+When an application or process, known as a subject, makes a request to access an object, like a file, SELinux checks with an access vector cache (AVC), where permissions are cached for subjects and objects.
+
+If SELinux is unable to make a decision about access based on the cached permissions, it sends the request to the security server. The security server checks for the security context of the app or process and the file. Security context is applied from the SELinux policy database. Permission is then granted or denied. 
+
+If permission is denied, an "avc: denied" message will be available in /var/log.messages.
 
 ```markdown
-Syntax highlighted code block
 
-# Header 1
-## Header 2
-### Header 3
+## Handling the Selinux errors:
 
-- Bulleted
-- List
+If there is an selinux error, we can address them using the following,
 
-1. Numbered
-2. List
+1. Wrong labels: Your labeling may be incorrect, use audit2allow to fix the labels.
+2. Need to fix policies: This is to inform you have made or might need to adjust a policy.
+3. Bug in policy: A bug which need to be addressed.
+4. **Check for neverallows**: System might not allow certain policies at build time. Handle them at system spolicies.
 
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+### AVC Rules
 
-### Jekyll Themes
+AVC rules are the control privileges that are allowed for processes.
+The four AV rules are 
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/skris08/selinux/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+- allow
+- dontaudit
+- auditallow
+- neverallow
 
-### Support or Contact
+The general syntax of the AV rule can be given as:
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+```
+`rule_name source_type target_type:class perm_set;`
+```
+
+
+### allow
+
+The allow rule checks whether the operations between the source_type and target_type are allowed for the class and permissions defined.
+
+### dontaudit
+
+The dontaudit rule stops the auditing of denial messages as it is known that this event always happens and does not cause any real issues. This also helps to manage the audit log by excluding known events.
+
+### auditallow
+
+Audit the event as a record as it is useful for auditing purposes. Note that this rule only audits the event, it still requires the allow rule to grant permission.
+
+### neverallow
+
+This rule specifies that an allow rule must not be generated for the operation, even if it has been previously allowed.
